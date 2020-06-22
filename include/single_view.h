@@ -11,10 +11,12 @@
 #include <iterator>
 #include <utility>
 #include <stdexcept>
+#include <limits>
 
 namespace notstd {
     template<typename T, std::size_t N = 1>
     class single_view {
+    public: // types
         using value_type = T;
         using size_type = std::size_t;
         using difference_type = std::ptrdiff_t;
@@ -123,19 +125,9 @@ namespace notstd {
                 return a.curr <= b.curr;
             }
 
-            friend bool operator>(const _iterator_templ &a, const _iterator_templ &b) {
-                if (a.location != b.location) {
-                    throw std::invalid_argument("Requested comparison between different views");
-                }
-                return a.curr > b.curr;
-            }
+            friend bool operator>(const _iterator_templ &a, const _iterator_templ &b) { return !(a <= b); }
 
-            friend bool operator>=(const _iterator_templ &a, const _iterator_templ &b) {
-                if (a.location != b.location) {
-                    throw std::invalid_argument("Requested comparison between different views");
-                }
-                return a.curr >= b.curr;
-            }
+            friend bool operator>=(const _iterator_templ &a, const _iterator_templ &b) { return !(a < b); }
 
         public: // conversion from iterator to const_iterator
             template<bool B = mutability, typename = typename std::enable_if<!B>::type>
@@ -164,7 +156,7 @@ namespace notstd {
         using reverse_iterator = std::reverse_iterator<iterator>;
         using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-    public:
+    public: // constructors
         template<typename... Args>
         explicit single_view(Args &&... args) : contents(std::forward<Args>(args)...) {}
 
@@ -199,7 +191,9 @@ namespace notstd {
         const_reverse_iterator crend() const noexcept { return cbegin(); }
 
     public: // capacity
-        std::size_t size() { return N; }
+        size_type size() const noexcept { return N; }
+
+        difference_type max_size() const noexcept { return std::numeric_limits<difference_type>::max(); }
 
     private:
         T contents;
