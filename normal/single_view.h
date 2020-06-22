@@ -3,8 +3,8 @@
 // License: GNU LGPL 3.0
 //
 
-#ifndef NOTSTD_SINGLE_VIEW_H
-#define NOTSTD_SINGLE_VIEW_H
+#ifndef SINGLE_VIEW_SINGLE_VIEW_H
+#define SINGLE_VIEW_SINGLE_VIEW_H
 
 #include <cstddef>
 #include <type_traits>
@@ -178,17 +178,17 @@ namespace notstd {
 
         const_iterator cend() const noexcept { return const_iterator(std::addressof(contents), N); }
 
-        reverse_iterator rbegin() noexcept { return end(); }
+        reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
 
-        const_reverse_iterator rbegin() const noexcept { return end(); }
+        const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator(end()); }
 
-        const_reverse_iterator crbegin() const noexcept { return cend(); }
+        const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator(cend()); }
 
-        reverse_iterator rend() noexcept { return begin(); }
+        reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
 
-        const_reverse_iterator rend() const noexcept { return begin(); }
+        const_reverse_iterator rend() const noexcept { return const_reverse_iterator(begin()); }
 
-        const_reverse_iterator crend() const noexcept { return cbegin(); }
+        const_reverse_iterator crend() const noexcept { return const_reverse_iterator(cbegin()); }
 
     public: // capacity
         size_type size() const noexcept { return N; }
@@ -200,4 +200,4 @@ namespace notstd {
     };
 }
 
-#endif //NOTSTD_SINGLE_VIEW_H
+#endif //SINGLE_VIEW_SINGLE_VIEW_H

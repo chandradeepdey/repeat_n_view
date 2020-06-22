@@ -4,4 +4,7 @@ project("single_view"
         DESCRIPTION "C++ library implementing a single_view with support for looping over a single object")
 
 add_library(single_view INTERFACE)
-target_include_directories(single_view INTERFACE include)
+target_include_directories(single_view INTERFACE normal)
+
+add_library(dereferencing_single_view INTERFACE)
+target_include_directories(dereferencing_single_view INTERFACE dereferencing)
