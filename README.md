@@ -1,9 +1,7 @@
-# single_view
-C++ library implementing a single_view with support for looping over a single object
+# repeat_n_view
+C++11 compatible library implementing repeat_n_view
 
-What's different: `begin() + N == end()` where N is the second template parameter (defaults to 1).
+### repeat_n_owned_view and repeat_n_foreign_view
+repeat_n_owned_view<T, N>'s constructor forwards the arguments to T's constructor. The object created through this is owned by the repeat_n_owned_view and may be accessed through the data() member functions. Iterators work by copying a pointer to this owned object.
 
-### dereferencing_single_view and single_view
-single_view<T, N>'s constructor forwards the arguments to T's constructor. The object created through this is owned by the single_view and may be accessed through the data() member function. Iterators work by copying a pointer to this owned object.
-
-For dereferencing_single_view<T,N>, the constructor accepts a pointer to const T. A copy of this pointer is stored and no attempt to copy the object is made. Iterators work by copying this foreign pointer.
+For repeat_n_foreign_view<T, N>, the constructor accepts a pointer to const T. A copy of this pointer is stored and no attempt to copy the object is made. Iterators work by copying this foreign pointer.

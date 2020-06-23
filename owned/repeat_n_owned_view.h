@@ -3,8 +3,8 @@
 // License: GNU LGPL 3.0
 //
 
-#ifndef SINGLE_VIEW_SINGLE_VIEW_H
-#define SINGLE_VIEW_SINGLE_VIEW_H
+#ifndef REPEAT_N_VIEW_REPEAT_N_OWNED_VIEW_H
+#define REPEAT_N_VIEW_REPEAT_N_OWNED_VIEW_H
 
 #include <cstddef>
 #include <type_traits>
@@ -13,9 +13,9 @@
 #include <stdexcept>
 #include <limits>
 
-namespace notstd {
+namespace repeat_n_view {
     template<typename T, std::size_t N = 1>
-    class single_view {
+    class repeat_n_owned_view {
     public: // types
         using value_type = T;
         using size_type = std::size_t;
@@ -30,12 +30,12 @@ namespace notstd {
         class _iterator_templ {
             // Iterator
         public:
-            using value_type = single_view::value_type;
-            using difference_type = single_view::difference_type;
-            using reference = typename std::conditional<mutability, single_view::reference,
-                    single_view::const_reference>::type;
-            using pointer = typename std::conditional<mutability, single_view::pointer,
-                    single_view::const_pointer>::type;
+            using value_type = repeat_n_owned_view::value_type;
+            using difference_type = repeat_n_owned_view::difference_type;
+            using reference = typename std::conditional<mutability, repeat_n_owned_view::reference,
+                    repeat_n_owned_view::const_reference>::type;
+            using pointer = typename std::conditional<mutability, repeat_n_owned_view::pointer,
+                    repeat_n_owned_view::const_pointer>::type;
             using iterator_category = std::random_access_iterator_tag;
         public:
             _iterator_templ(const _iterator_templ &other) = default;
@@ -140,8 +140,8 @@ namespace notstd {
                 return *this;
             }
 
-        private: // constructor only single_view can access
-            friend class single_view;
+        private: // constructor only repeat_n_owned_view can access
+            friend class repeat_n_owned_view;
 
             _iterator_templ(pointer l, std::size_t c) : location(l), curr(c) {}
 
@@ -158,25 +158,25 @@ namespace notstd {
 
     public: // constructors
         template<typename... Args>
-        explicit single_view(Args &&... args) : contents(std::forward<Args>(args)...) {}
+        explicit repeat_n_owned_view(Args &&... args) : __contents(std::forward<Args>(args)...) {}
 
     public: // access contents directly
-        reference data() noexcept { return contents; }
+        reference data() noexcept { return __contents; }
 
-        const_reference data() const noexcept { return contents; }
+        const_reference data() const noexcept { return __contents; }
 
     public: // iterators
-        iterator begin() noexcept { return iterator(std::addressof(contents), 0); }
+        iterator begin() noexcept { return iterator(std::addressof(__contents), 0); }
 
-        const_iterator begin() const noexcept { return const_iterator(std::addressof(contents), 0); }
+        const_iterator begin() const noexcept { return const_iterator(std::addressof(__contents), 0); }
 
-        const_iterator cbegin() const noexcept { return const_iterator(std::addressof(contents), 0); }
+        const_iterator cbegin() const noexcept { return const_iterator(std::addressof(__contents), 0); }
 
-        iterator end() noexcept { return iterator(std::addressof(contents), N); }
+        iterator end() noexcept { return iterator(std::addressof(__contents), N); }
 
-        const_iterator end() const noexcept { return const_iterator(std::addressof(contents), N); }
+        const_iterator end() const noexcept { return const_iterator(std::addressof(__contents), N); }
 
-        const_iterator cend() const noexcept { return const_iterator(std::addressof(contents), N); }
+        const_iterator cend() const noexcept { return const_iterator(std::addressof(__contents), N); }
 
         reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
 
@@ -196,8 +196,8 @@ namespace notstd {
         difference_type max_size() const noexcept { return std::numeric_limits<difference_type>::max(); }
 
     private:
-        T contents;
+        T __contents;
     };
 }
 
-#endif //SINGLE_VIEW_SINGLE_VIEW_H
+#endif //REPEAT_N_VIEW_REPEAT_N_OWNED_VIEW_H

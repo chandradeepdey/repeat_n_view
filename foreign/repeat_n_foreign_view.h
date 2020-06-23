@@ -3,8 +3,8 @@
 // License: GNU LGPL 3.0
 //
 
-#ifndef SINGLE_VIEW_DEREFERENCING_SINGLE_VIEW_H
-#define SINGLE_VIEW_DEREFERENCING_SINGLE_VIEW_H
+#ifndef REPEAT_N_VIEW_REPEAT_N_FOREIGN_VIEW_H
+#define REPEAT_N_VIEW_REPEAT_N_FOREIGN_VIEW_H
 
 #include <cstddef>
 #include <type_traits>
@@ -13,9 +13,9 @@
 #include <stdexcept>
 #include <limits>
 
-namespace notstd {
+namespace repeat_n_view {
     template<typename T, std::size_t N = 1>
-    class dereferencing_single_view {
+    class repeat_n_foreign_view {
     public: // types
         using value_type = T;
         using size_type = std::size_t;
@@ -25,20 +25,20 @@ namespace notstd {
         using pointer = typename std::add_pointer<T>::type;
         using const_pointer = typename std::add_pointer<typename std::add_const<T>::type>::type;
 
-        class iterator {
+        class const_iterator {
             // Iterator
         public:
-            using value_type = dereferencing_single_view::value_type;
-            using difference_type = dereferencing_single_view::difference_type;
-            using reference = dereferencing_single_view::const_reference;
-            using pointer = dereferencing_single_view::const_pointer;
+            using value_type = repeat_n_foreign_view::value_type;
+            using difference_type = repeat_n_foreign_view::difference_type;
+            using reference = repeat_n_foreign_view::const_reference;
+            using pointer = repeat_n_foreign_view::const_pointer;
             using iterator_category = std::random_access_iterator_tag;
         public:
-            iterator(const iterator &other) = default;
+            const_iterator(const const_iterator &other) = default;
 
-            iterator &operator=(const iterator &other) = default;
+            const_iterator &operator=(const const_iterator &other) = default;
 
-            friend void swap(iterator &lhs, iterator &rhs) {
+            friend void swap(const_iterator &lhs, const_iterator &rhs) {
                 auto temp = lhs;
                 lhs = rhs;
                 rhs = temp;
@@ -46,59 +46,59 @@ namespace notstd {
 
             reference operator*() const { return *location; }
 
-            iterator &operator++() {
+            const_iterator &operator++() {
                 ++curr;
                 return *this;
             }
 
             // InputIterator
-            friend bool operator==(const iterator &lhs, const iterator &rhs) {
+            friend bool operator==(const const_iterator &lhs, const const_iterator &rhs) {
                 if (lhs.location != rhs.location) {
                     throw std::invalid_argument("Requested comparison between different views");
                 }
                 return lhs.curr == rhs.curr;
             }
 
-            friend bool operator!=(const iterator &lhs, const iterator &rhs) { return !(lhs == rhs); }
+            friend bool operator!=(const const_iterator &lhs, const const_iterator &rhs) { return !(lhs == rhs); }
 
             pointer operator->() const { return &operator*(); }
 
-            iterator operator++(int) &{
+            const_iterator operator++(int) &{
                 auto prev = *this;
                 ++*this;
                 return prev;
             }
 
             // ForwardIterator
-            iterator() = default;
+            const_iterator() = default;
 
             // BidirectionalIterator
-            iterator &operator--() {
+            const_iterator &operator--() {
                 --curr;
                 return *this;
             }
 
-            iterator operator--(int) &{
+            const_iterator operator--(int) &{
                 auto prev = *this;
                 --*this;
                 return prev;
             }
 
             // RandomAccessIterator
-            iterator &operator+=(difference_type n) {
+            const_iterator &operator+=(difference_type n) {
                 curr += n;
                 return *this;
             }
 
-            friend iterator operator+(iterator a, difference_type n) { return a += n; }
+            friend const_iterator operator+(const_iterator a, difference_type n) { return a += n; }
 
-            friend iterator operator+(difference_type n, iterator a) { return a + n; }
+            friend const_iterator operator+(difference_type n, const_iterator a) { return a + n; }
 
-            iterator &operator-=(difference_type n) { return operator+=(-n); }
+            const_iterator &operator-=(difference_type n) { return operator+=(-n); }
 
-            friend iterator operator-(iterator a, difference_type n) { return a -= n; }
+            friend const_iterator operator-(const_iterator a, difference_type n) { return a -= n; }
 
-            friend difference_type operator-(const iterator &a, const iterator &b) {
+            friend difference_type operator-(const const_iterator &a, const const_iterator &b) {
                 if (a.location != b.location) {
                     throw std::invalid_argument("Requested difference between different views");
                 }
@@ -107,61 +107,51 @@ namespace notstd {
 
             reference operator[](difference_type n) { return *location; }
 
-            friend bool operator<(const iterator &a, const iterator &b) {
+            friend bool operator<(const const_iterator &a, const const_iterator &b) {
                 if (a.location != b.location) {
                     throw std::invalid_argument("Requested comparison between different views");
                 }
                 return a.curr < b.curr;
             }
 
-            friend bool operator<=(const iterator &a, const iterator &b) {
+            friend bool operator<=(const const_iterator &a, const const_iterator &b) {
                 if (a.location != b.location) {
                     throw std::invalid_argument("Requested comparison between different views");
                 }
                 return a.curr <= b.curr;
             }
 
-            friend bool operator>(const iterator &a, const iterator &b) { return !(a <= b); }
+            friend bool operator>(const const_iterator &a, const const_iterator &b) { return !(a <= b); }
 
-            friend bool operator>=(const iterator &a, const iterator &b) { return !(a < b); }
+            friend bool operator>=(const const_iterator &a, const const_iterator &b) { return !(a < b); }
 
-        private: // constructor only dereferencing_single_view can access
-            friend class dereferencing_single_view;
+        private: // constructor only repeat_n_foreign_view can access
+            friend class repeat_n_foreign_view;
 
-            iterator(pointer l, std::size_t c) : location(l), curr(c) {}
+            const_iterator(pointer l, std::size_t c) : location(l), curr(c) {}
 
         private: // data members
             pointer location = nullptr;
             std::size_t curr = 0;
         };
 
-        using const_iterator = iterator;
-        using reverse_iterator = std::reverse_iterator<iterator>;
         using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     public: // constructors
-        explicit dereferencing_single_view(const_pointer outsider) : contents(outsider) {}
+        explicit repeat_n_foreign_view(const_pointer outsider) : __contents(outsider) {}
 
     public: // iterators
-        iterator begin() noexcept { return iterator(contents, 0); }
+        const_iterator begin() const noexcept { return const_iterator(__contents, 0); }
 
-        const_iterator begin() const noexcept { return const_iterator(contents, 0); }
+        const_iterator cbegin() const noexcept { return const_iterator(__contents, 0); }
 
-        const_iterator cbegin() const noexcept { return const_iterator(contents, 0); }
+        const_iterator end() const noexcept { return const_iterator(__contents, N); }
 
-        iterator end() noexcept { return iterator(contents, N); }
-
-        const_iterator end() const noexcept { return const_iterator(contents, N); }
-
-        const_iterator cend() const noexcept { return const_iterator(contents, N); }
-
-        reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
+        const_iterator cend() const noexcept { return const_iterator(__contents, N); }
 
         const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator(end()); }
 
         const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator(cend()); }
-
-        reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
 
         const_reverse_iterator rend() const noexcept { return const_reverse_iterator(begin()); }
 
@@ -173,8 +163,8 @@ namespace notstd {
         difference_type max_size() const noexcept { return std::numeric_limits<difference_type>::max(); }
 
     private:
-        const_pointer contents;
+        const_pointer __contents;
     };
 }
 
-#endif //SINGLE_VIEW_DEREFERENCING_SINGLE_VIEW_H
+#endif //REPEAT_N_VIEW_REPEAT_N_FOREIGN_VIEW_H

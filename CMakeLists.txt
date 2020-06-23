@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.9)
-project("single_view"
-        VERSION 2.1
-        DESCRIPTION "C++ library implementing a single_view with support for looping over a single object")
+project("repeat_n_view"
+        VERSION 3.0
+        DESCRIPTION "C++11 compatible library implementing repeat_n_view")
 
-add_library(single_view INTERFACE)
-target_include_directories(single_view INTERFACE normal)
+add_library(repeat_n_owned_view INTERFACE)
+target_include_directories(repeat_n_owned_view INTERFACE owned)
 
-add_library(dereferencing_single_view INTERFACE)
-target_include_directories(dereferencing_single_view INTERFACE dereferencing)
+add_library(repeat_n_foreign_view INTERFACE)
+target_include_directories(repeat_n_foreign_view INTERFACE foreign)
