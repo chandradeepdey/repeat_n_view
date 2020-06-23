@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 project("repeat_n_view"
-        VERSION 3.0
+        VERSION 3.01
         DESCRIPTION "C++11 compatible library implementing repeat_n_view")
 
 add_library(repeat_n_owned_view INTERFACE)
