@@ -130,11 +130,11 @@ namespace repeat_n_view {
             friend bool operator>=(const _iterator_templ &a, const _iterator_templ &b) { return !(a < b); }
 
         public: // conversion from iterator to const_iterator
-            template<bool B = mutability, typename = typename std::enable_if<!B>::type>
-            _iterator_templ(const _iterator_templ<!B> &other) : location(other.location), curr(other.curr) {}
+            template<bool B, typename std::enable_if<B, bool>::type = true>
+            _iterator_templ(const _iterator_templ<B> &other) : location(other.location), curr(other.curr) {}
 
-            template<bool B = mutability, typename std::enable_if<!B, bool>::type = true>
-            _iterator_templ &operator=(const _iterator_templ<!B> &other) {
+            template<bool B, typename std::enable_if<B, bool>::type = true>
+            _iterator_templ &operator=(const _iterator_templ<B> &other) {
                 location = other.location;
                 curr = other.curr;
                 return *this;
